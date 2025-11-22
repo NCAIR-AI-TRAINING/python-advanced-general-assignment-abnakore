@@ -25,8 +25,8 @@ def get_last_visitor():
         return None, None
 
     # Get the name and timestamp of the last visitor
-    name, timestamp = lines[-1].strip().split(" - ")
-    last_time = datetime.strptime(timestamp, "%d/%m/%Y %H:%M:%S")
+    name, timestamp = lines[-1].strip().split(" | ")
+    last_time = datetime.fromisoformat(timestamp)
     return name, last_time
 
 def add_visitor(visitor_name):
@@ -47,7 +47,7 @@ def add_visitor(visitor_name):
 
     # Log visitor
     with open(FILENAME, "a") as f:
-        f.write(f"{visitor_name} - {now.strftime('%d/%m/%Y %H:%M:%S')}\n")
+        f.write(f"{visitor_name} | {now.isoformat()}\n")
 
 def main():
     ensure_file()
