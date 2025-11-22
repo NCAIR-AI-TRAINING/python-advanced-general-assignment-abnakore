@@ -10,13 +10,34 @@ class EarlyEntryError(Exception):
 FILENAME = "visitors.txt"
 
 def ensure_file():
-    pass
+    """Create file if it doesn't exist."""
+    if not os.path.exists(FILENAME):
+        with open(FILENAME, "w") as f:
+            pass
 
 def get_last_visitor():
-    pass
+    """Return (name, timestamp) of last visitor or (None, None) if file is empty."""
+    with open(FILENAME, "r") as f:
+        lines = f.readlines()
+
+    if not lines:
+        return None, None
+
+    # Get the name and timestamp of the last visitor
+    name, timestamp = lines[-1].strip().split(" - ")
+    return name, timestamp
 
 def add_visitor(visitor_name):
-    pass
+    last_name, last_time = get_last_visitor()
+    now = datetime.now()
+
+    # Check duplicate consecutive visitor
+    if last_name == visitor_name:
+        raise DuplicateVisitorError(f"'{visitor_name}' cannot sign in twice in a row.")
+
+    # Log visitor
+    with open(FILENAME, "a") as f:
+        f.write(f"{visitor_name} - {now.strftime('%d/%m/%Y %H:%M:%S')}\n")
 
 def main():
     ensure_file()
