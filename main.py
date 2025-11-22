@@ -8,6 +8,7 @@ class EarlyEntryError(Exception):
     pass
 
 FILENAME = "visitors.txt"
+WAIT_TIME_SECONDS = 5 * 60 # 5 minutes
 
 def ensure_file():
     """Create file if it doesn't exist."""
@@ -25,7 +26,8 @@ def get_last_visitor():
 
     # Get the name and timestamp of the last visitor
     name, timestamp = lines[-1].strip().split(" - ")
-    return name, timestamp
+    last_time = datetime.strptime(timestamp, "%d/%m/%Y %H:%M:%S")
+    return name, last_time
 
 def add_visitor(visitor_name):
     last_name, last_time = get_last_visitor()
@@ -34,6 +36,14 @@ def add_visitor(visitor_name):
     # Check duplicate consecutive visitor
     if last_name == visitor_name:
         raise DuplicateVisitorError(f"'{visitor_name}' cannot sign in twice in a row.")
+    
+    # Check 5-minute waiting rule
+    if last_time is not None:
+        elapsed = (now - last_time).total_seconds()
+        if elapsed < WAIT_TIME_SECONDS:
+            remaining = int(WAIT_TIME_SECONDS - elapsed)
+            raise EarlyEntryError(f"Please wait {remaining // 60} min {remaining % 60} sec before logging the next visitor.")
+
 
     # Log visitor
     with open(FILENAME, "a") as f:
