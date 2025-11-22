@@ -37,7 +37,7 @@ def add_visitor(visitor_name):
 
     # Log visitor
     with open(FILENAME, "a") as f:
-        f.write(f"{visitor_name} | {now.strftime("%Y-%m-%dT%H:%M:%S")}\n")
+        f.write(f"{visitor_name} | {now.isoformat()}\n")
 
 def main():
     ensure_file()
